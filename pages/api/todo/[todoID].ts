@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { deleteTodo, editTodo } from "../../../src/network/dataManager";
+import { deleteTodo, editTodo } from "../../../src/network/firebaseData";
 
 export default function handler(
     req: NextApiRequest,

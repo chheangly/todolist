@@ -5,10 +5,8 @@ import {
     doc,
     DocumentData,
     DocumentReference,
-    getDoc,
     getDocs,
     getFirestore,
-    onSnapshot,
     orderBy,
     query,
     setDoc
@@ -34,27 +32,6 @@ export async function getTodos() {
     });
     return todos;
 }
-
-// export function getTodos(
-//     setTodos: React.Dispatch<React.SetStateAction<TodoType[]>>
-// ) {
-//     const docsQuery = query(
-//         collection(db, "todos"),
-//         orderBy("createdAt")
-//     );
-
-//     onSnapshot(docsQuery, (querySnapshot) => {
-//         const todos: TodoType[] = [];
-
-//         querySnapshot.forEach((doc) => {
-//             const newTodo = doc.data() as TodoType;
-//             newTodo.id = doc.id;
-//             todos.push(newTodo);
-//         });
-
-//         setTodos(todos);
-//     });
-// }
 
 export function createTodo(
     todo: TodoType,

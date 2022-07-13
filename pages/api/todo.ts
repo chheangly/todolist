@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { createTodo, getTodos } from "../../src/network/dataManager";
+import { createTodo, getTodos } from "../../src/network/firebaseData";
 
 export default async function (
     req: NextApiRequest,
@@ -9,7 +9,6 @@ export default async function (
     const method = req.method;
     const data = req.body;
 
-    let result;
     switch (method) {
         case 'GET':
             try {
@@ -23,7 +22,7 @@ export default async function (
             try {
                 const jsonBody = JSON.parse(data);
                 createTodo(jsonBody);
-                const respond = {status: "success", message: data.id}
+                const respond = {status: "success", message: data}
                 res.status(200).json(respond);
             } catch (e) {
                 res.status(500).json({message: e});

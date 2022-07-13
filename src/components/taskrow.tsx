@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import TodoType from "../models/todo";
-import { deleteTodo } from '../network/dataManager';
 
 interface TaskRowType {
     task: TodoType,
@@ -72,8 +71,6 @@ const TaskRow = (data: { task: TodoType }) => {
                 setActionVisible(false);
             }}
             style={{
-                // height: 60,
-                // width: '70%',
                 backgroundColor: '#e8edea',
                 display: 'flex',
                 justifyContent: 'space-between',
