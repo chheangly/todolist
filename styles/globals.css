@@ -14,3 +14,19 @@ a {
 * {
   box-sizing: border-box;
 }
+
+table {
+  border: 1px solid black;
+}
+
+th {
+  border: 1px solid black;
+  background-color: black;
+  color: white;
+}
+
+td {
+  border: 1px solid lightgray;
+  justify-content: center;
+  align-items: center;
+}
