@@ -51,25 +51,29 @@ const Home: NextPage = () => {
   }
 
   const addNewTaskList = () => {
-    const ind = todoList.findIndex(e => e.todo === todoText);
-    if (ind >= 0) {
-      alert("task already exist");
-      setTodoText('');
+    if (todoText === '') {
+      alert("Todo task can't be empty")
     } else {
-      fetch('api/todo', {
-        method: 'POST',
-        body: JSON.stringify({
-          id: generateUID().toString(),
-          todo: todoText,
-          isCompleted: false,
-          createdAt: Date.now(),
-        })
-      }).then(res => {
-        res.json().then(data => {
-          console.log(data);
-          setTodoText('');
+      const ind = todoList.findIndex(e => e.todo === todoText);
+      if (ind >= 0) {
+        alert("task already exist");
+        setTodoText('');
+      } else {
+        fetch('api/todo', {
+          method: 'POST',
+          body: JSON.stringify({
+            id: generateUID().toString(),
+            todo: todoText,
+            isCompleted: false,
+            createdAt: Date.now(),
+          })
+        }).then(res => {
+          res.json().then(data => {
+            console.log(data);
+            setTodoText('');
+          });
         });
-      });
+      }
     }
   }
 
