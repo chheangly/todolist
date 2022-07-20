@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import TaskRow from '../src/components/taskrow';
 import TodoType from '../src/models/todo';
 import { firebaseApp } from '../src/network/firebase';
+import { convertDateToString } from '../src/utils/Help';
 import styles from '../styles/Home.module.css';
 
 const db = getFirestore(firebaseApp);
@@ -22,6 +23,7 @@ const Home: NextPage = () => {
   const [todoText, setTodoText] = useState('');
   const [todoList, setTodoList] = useState<TodoType[]>([]);
   const [emptyText, setEmptyText] = useState('No result. Create a new one instead!');
+  const [searchDate, setSearchDate] = useState('');
 
   useEffect(() => {
     fetchTodoList();
@@ -54,8 +56,8 @@ const Home: NextPage = () => {
     if (todoText === '') {
       alert("Todo task can't be empty")
     } else {
-      const ind = todoList.findIndex(e => e.todo === todoText);
-      if (ind >= 0) {
+      const isExisting = checkExistingRecord(todoText);
+      if (isExisting) {
         alert("task already exist");
         setTodoText('');
       } else {
@@ -63,7 +65,7 @@ const Home: NextPage = () => {
           method: 'POST',
           body: JSON.stringify({
             id: generateUID().toString(),
-            todo: todoText,
+            todo: todoText.trim(),
             isCompleted: false,
             createdAt: Date.now(),
           })
@@ -84,11 +86,38 @@ const Home: NextPage = () => {
     setTodoList(originalList);
   }
 
+  const getDate = (timeStamp : number) => {
+    return new Date(timeStamp).getDate();
+  }
+
+  const checkExistingRecord = (todo: string) => {
+    const currentDate = new Date(Date.now()).getDate();
+    const ind = todoList.findIndex(e => {
+      return e.todo.toLocaleLowerCase() === todo.toLocaleLowerCase().trim() && getDate(e.createdAt) === currentDate;
+    });
+    return ind >= 0;
+  }
+
+  const isTheSameDate = (d1: Date, d2: Date) => {
+    return d1.getDate() === d2.getDate() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getFullYear() === d2.getFullYear();
+  }
+
+  const filterByDate = (filterDate: Date) => {
+    const list = originalList.filter(e => {
+      return isTheSameDate(new Date(e.createdAt), new Date(filterDate));
+    });
+    setTodoList(list);
+  }
+
   const filterTodoList = (todoText: string) => {
     if (todoText === '') {
       setTodoList(originalList);
     } else {
-      const list = originalList.filter(t => t.todo.includes(todoText));
+      const list = originalList.filter(t => {
+        return t.todo.toLocaleLowerCase().includes(todoText.toLocaleLowerCase().trim());
+      });
       if (list.length === 0) {
         setEmptyText('No result. Create a new one instead!');
       } else {
@@ -112,10 +141,11 @@ const Home: NextPage = () => {
         </h1>
         <input
           value={todoText}
-          placeholder={'Add New Task'}
+          placeholder={'Add New Task / Filter'}
           type={'text'}
           onChange={(e) => {
             setTodoText(e.currentTarget.value);
+            filterTodoList(e.currentTarget.value);
           }}
           onKeyUp={(e) => {
             if (e.key === "Enter") {
@@ -124,9 +154,21 @@ const Home: NextPage = () => {
           }}
         />
         <input
-          placeholder={'Filter Todo'}
+          type={'date'}
+          value={searchDate}
           onChange={(e) => {
-            filterTodoList(e.currentTarget.value);
+            const filterDate = new Date(e.currentTarget.value);
+            filterByDate(filterDate);
+            setSearchDate(convertDateToString(filterDate));
+          }}
+        />
+        <input
+          value={'Reset'}
+          type={'button'}
+          onClick={() => {
+            setTodoList(originalList);
+            setTodoText('');
+            setSearchDate('');
           }}
         />
         <div style={{marginTop: 50}}>
